@@ -1,20 +1,20 @@
 <div
-  class="w-full h-screen p-4 flex flex-col justify-center items-center gap-4"
+  class="w-full h-dvh p-4 flex flex-col justify-center items-center gap-4"
 >
   <h1 class="text-white font-extrabold text-xl">WODZ.ME</h1>
   <img src="/bear.png" class="h-64" />
 
   <textarea
     [value]="wod()"
-    class="bg-gray-800 text-white font-bold p-4 w-full max-w-xl grow box-border text-2xl border-2 rounded-2xl"
+    class="bg-gray-800 text-white font-bold p-4 w-full max-w-screen-sm grow box-border text-lg md:text-2xl border-2 rounded-2xl shadow-[6px_6px_0_0_rgba(200,200,200,1)]"
     style="white-space: pre-wrap"
   ></textarea>
 
   <button
     (click)="generateWod()"
     [disabled]="loading()"
-    class="p-4 text-3xl font-extrabold text-amber-700 border-2 rounded-2xl w-full max-w-md
-    background-amber-300 shadow-[6px_6px_0_0_rgba(255,255,255,1)]
+    class="p-4 text-3xl font-extrabold text-amber-700 border-2 rounded-2xl w-full max-w-screen-sm
+    background-amber-300 shadow-[6px_6px_0_0_rgba(200,200,200,1)]
     hover:shadow-[2px_2px_0_0_rgba(255,255,255,1)] hover:translate-x-[4px] hover:translate-y-[4px]
     active:shadow-[2px_2px_0_0_rgba(255,255,255,1)] active:translate-x-[4px] active:translate-y-[4px]">
     @if (loading()) {
