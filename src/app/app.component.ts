@@ -1,11 +1,13 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { getGenerativeModel, VertexAI } from '@angular/fire/vertexai-preview';
+import { ChipOption, ChipsComponent } from './ui/chips/chips.component';
+import { WodDuration, WodFocus, WodLevel, WodType } from './types';
+import { WodService } from './wod.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ChipsComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -19,27 +21,51 @@ export class AppComponent {
 
   readonly loading = signal(false);
 
-  constructor(private readonly vertexAI: VertexAI) {}
+  durationOptions = signal<ChipOption<WodDuration>[]>([
+    { key: WodDuration.SHORT, value: 'Short', selected: false },
+    { key: WodDuration.MEDIUM, value: 'Medium', selected: false },
+    { key: WodDuration.LONG, value: 'Long', selected: false },
+  ]);
+  levelOptions = signal<ChipOption<WodLevel>[]>([
+    { key: WodLevel.BEGINNER, value: 'Beginner', selected: false },
+    { key: WodLevel.INTERMEDIATE, value: 'Intermediate', selected: false },
+    { key: WodLevel.RX, value: 'Rx', selected: false },
+    { key: WodLevel.BRUTAL, value: 'Brutal', selected: false },
+  ]);
+  typeOptions = signal<ChipOption<WodType>[]>([
+    { key: WodType.RFT, value: 'RFT', selected: false },
+    { key: WodType.AMRAP, value: 'AMRAP', selected: false },
+    { key: WodType.EMOM, value: 'EMOM', selected: false },
+    { key: WodType.CHIPPER, value: 'Chipper', selected: false },
+    { key: WodType.MIXED, value: 'Mixed', selected: false },
+  ]);
+  focusOptions = signal<ChipOption<WodFocus>[]>([
+    { key: WodFocus.METCON, value: 'Metcon', selected: false },
+    { key: WodFocus.WEIGHTLIFTING, value: 'Weightlifting', selected: false },
+    { key: WodFocus.GYMNASTICS, value: 'Gymnastics', selected: false },
+  ]);
+
+  constructor(private readonly wodService: WodService) {}
 
   async generateWod() {
     this.loading.set(true);
-    const prompt =
-      'Give me a crossfit workout of the day. A very tough and long one. Keep it simple, no unneeded titles, just the instructions (e.g. RFT, EMOM, AMRAP, whatever) and then bullet points (with dashes). Metric system. no warmup or cooldown, just the wod. dont use asterisks or other symbols, just dashes.';
-    const model = getGenerativeModel(this.vertexAI, {
-      model: 'gemini-1.5-flash',
-    });
-    const result = await model.generateContent(prompt).catch((error) => {
-      console.error(error);
-      return {
-        response: {
-          text: () =>
-            'Error - Too many requests. Please wait a few minutes and try again.',
-        },
-      };
-    });
-
-    const response = result.response;
-    this.wod.set(response.text());
+    const wodConfiguration = {
+      duration: this.durationOptions()
+        .filter((o) => o.selected)
+        .map((o) => o.key)[0],
+      level: this.levelOptions()
+        .filter((o) => o.selected)
+        .map((o) => o.key)[0],
+      wodType: this.typeOptions()
+        .filter((o) => o.selected)
+        .map((o) => o.key)[0],
+      focus: this.focusOptions()
+        .filter((o) => o.selected)
+        .map((o) => o.key),
+    };
+    await this.wodService
+      .generateWod(wodConfiguration)
+      .then((wod) => this.wod.set(wod));
     this.loading.set(false);
   }
 }

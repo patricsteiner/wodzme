@@ -1,0 +1,19 @@
+
+.pressable {
+  color: white;
+  background: #222;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 3px 6px 0 #666;
+  &.enable-hover:hover:not(.pressed) {
+    background: #444;
+    box-shadow: 2px 5px 0 #555;
+    transform: translateX(1px) translateY(1px);
+  }
+  &.pressed {
+    background:  rgb(180, 83, 9);
+    box-shadow: 1px 3px 0 #555;
+    transform: translateX(2px) translateY(3px);
+  }
+}
+
