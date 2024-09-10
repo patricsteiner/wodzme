@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-primary: #ff914d;
+  --color-primary-contrast: #000;
+  --color-accent: #ffbd59;
+  --color-accent-contrast: #000;
+}
+
 body {
   background-color: black;
   @apply font-mono;

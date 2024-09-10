@@ -11,7 +11,8 @@
     transform: translateX(1px) translateY(1px);
   }
   &.pressed {
-    background:  rgb(180, 83, 9);
+    background:  var(--color-primary);
+    color: var(--color-primary-contrast);
     box-shadow: 1px 3px 0 #555;
     transform: translateX(2px) translateY(3px);
   }
