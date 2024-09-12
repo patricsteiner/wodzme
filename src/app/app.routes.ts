@@ -8,12 +8,19 @@ export const routes: Routes = [
   },
   {
     path: 'home',
-    loadComponent: () =>
-      import('./pages/home/home.component').then((m) => m.HomeComponent),
+    loadComponent: () => import('./pages/home/home.component').then((m) => m.HomeComponent),
   },
   {
     path: 'wods',
-    loadComponent: () =>
-      import('./pages/wods/wods.component').then((m) => m.WodsComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/wods/wods.component').then((m) => m.WodsComponent),
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./pages/wods/wod/wod.component').then((m) => m.WodComponent),
+      },
+    ],
   },
 ];

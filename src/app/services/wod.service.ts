@@ -1,15 +1,7 @@
 import { Injectable } from '@angular/core';
 import { getGenerativeModel, VertexAI } from '@angular/fire/vertexai-preview';
 import { WodDuration, WodFocus, WodLevel, WodType } from './types';
-import {
-  addDoc,
-  collection,
-  collectionData,
-  doc,
-  docData,
-  Firestore,
-  query,
-} from '@angular/fire/firestore';
+import { addDoc, collection, collectionData, doc, docData, Firestore, query } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
 type WodConfig = {
@@ -28,16 +20,14 @@ const levels = {
   [WodLevel.BEGINNER]: 'For beginner crossfit athletes',
   [WodLevel.INTERMEDIATE]: 'For intermediate crossfit athletes',
   [WodLevel.RX]: 'Tough workout for experienced crossfit athletes',
-  [WodLevel.BRUTAL]:
-    'Absolutely brutal workout, only for the fittest of the fit',
+  [WodLevel.BRUTAL]: 'Absolutely brutal workout, only for the fittest of the fit',
 };
 const types = {
   [WodType.RFT]: 'Rounds for time',
   [WodType.AMRAP]: 'As many rounds as possible',
   [WodType.EMOM]: 'Every minute on the minute',
   [WodType.CHIPPER]: 'As fast as possible',
-  [WodType.MIXED]:
-    'A mix between all possible crossfit workout styles (RFT, AMRAP, EMOM, CHIPPERS, ...)',
+  [WodType.MIXED]: 'A mix between all possible crossfit workout styles (RFT, AMRAP, EMOM, CHIPPERS, ...)',
 };
 const focuses = {
   [WodFocus.METCON]: 'Metabolic conditioning',
@@ -79,15 +69,12 @@ export class WodService {
       },
     });
     return model
-      .generateContent(
-        'Workout properties: ' + this.stringifyWodConfig(wodConfig),
-      )
+      .generateContent('Workout properties: ' + this.stringifyWodConfig(wodConfig))
       .catch((error) => {
         console.error(error);
         return {
           response: {
-            text: () =>
-              'Error - Too many requests. Please wait a few minutes and try again.',
+            text: () => 'Error - Too many requests. Please wait a few minutes and try again.',
           },
         };
       })
@@ -97,34 +84,26 @@ export class WodService {
   private stringifyWodConfig(wodConfig: WodConfig) {
     let res = '';
     if (wodConfig.duration) {
-      res +=
-        'duration: ' +
-        wodConfig.duration +
-        ' (' +
-        durations[wodConfig.duration] +
-        ')\n';
+      res += 'duration: ' + wodConfig.duration + ' (' + durations[wodConfig.duration] + ')\n';
     }
     if (wodConfig.level) {
-      res +=
-        'level: ' + wodConfig.level + ' (' + levels[wodConfig.level] + ')\n';
+      res += 'level: ' + wodConfig.level + ' (' + levels[wodConfig.level] + ')\n';
     }
     if (wodConfig.wodType) {
-      res +=
-        'type: ' + wodConfig.wodType + ' (' + types[wodConfig.wodType] + ')\n';
+      res += 'type: ' + wodConfig.wodType + ' (' + types[wodConfig.wodType] + ')\n';
     }
     if (wodConfig.focus?.length) {
-      res +=
-        'focus: ' + wodConfig.focus.map((f) => focuses[f]).join(', ') + '\n';
+      res += 'focus: ' + wodConfig.focus.map((f) => focuses[f]).join(', ') + '\n';
     }
     return res;
   }
 
-  findAll(): Observable<{ workout: string }[]> {
-    return collectionData(query(collection(this.firestore, 'workouts')));
+  findAll(): Observable<{ workout: string; id: string }[]> {
+    return collectionData(query(collection(this.firestore, 'workouts')), { idField: 'id' });
   }
 
-  find(id: string) {
-    return docData(doc(this.firestore, 'workouts', id));
+  find(id: string): Observable<{ workout: string; id: string }> {
+    return docData(doc(this.firestore, 'workouts', id), { idField: 'id' });
   }
 
   save(workout: string) {
@@ -133,5 +112,9 @@ export class WodService {
 
   addResult(id: string, result: string) {
     addDoc(collection(this.firestore, 'workouts', id, 'results'), { result });
+  }
+
+  getResults(id: string): Observable<{ result: string }[]> {
+    return collectionData(query(collection(this.firestore, 'workouts', id, 'results')));
   }
 }

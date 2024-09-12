@@ -1,5 +1,5 @@
 <div class="text-white">
 @for (wod of wods$ | async; track wod) {
-    <div >{{ wod.workout }}</div>
+    <a [routerLink]="wod.id">{{ wod.workout }}</a>
   }
 </div>

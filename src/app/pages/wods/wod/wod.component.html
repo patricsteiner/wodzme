@@ -1,0 +1,11 @@
+<p class="text-white">
+  {{ (wod$ | async)?.workout }}
+</p>
+
+<input #input class="bg-gray-800"/>
+<button (click)="addResult(input.value)">add result</button>
+
+<h2>Results</h2>
+@for (result of results$ | async; track result) {
+  <div>{{ result.result }}</div>
+}
