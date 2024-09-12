@@ -1,6 +1,16 @@
 import { Injectable } from '@angular/core';
 import { getGenerativeModel, VertexAI } from '@angular/fire/vertexai-preview';
 import { WodDuration, WodFocus, WodLevel, WodType } from './types';
+import {
+  addDoc,
+  collection,
+  collectionData,
+  doc,
+  docData,
+  Firestore,
+  query,
+} from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
 
 type WodConfig = {
   duration?: WodDuration;
@@ -39,7 +49,10 @@ const focuses = {
   providedIn: 'root',
 })
 export class WodService {
-  constructor(private readonly vertexAI: VertexAI) {}
+  constructor(
+    private readonly firestore: Firestore,
+    private readonly vertexAI: VertexAI,
+  ) {}
 
   async generateWod(wodConfig: WodConfig): Promise<string> {
     const model = getGenerativeModel(this.vertexAI, {
@@ -104,5 +117,21 @@ export class WodService {
         'focus: ' + wodConfig.focus.map((f) => focuses[f]).join(', ') + '\n';
     }
     return res;
+  }
+
+  findAll(): Observable<{ workout: string }[]> {
+    return collectionData(query(collection(this.firestore, 'workouts')));
+  }
+
+  find(id: string) {
+    return docData(doc(this.firestore, 'workouts', id));
+  }
+
+  save(workout: string) {
+    addDoc(collection(this.firestore, 'workouts'), { workout });
+  }
+
+  addResult(id: string, result: string) {
+    addDoc(collection(this.firestore, 'workouts', id, 'results'), { result });
   }
 }
