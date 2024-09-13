@@ -11,6 +11,19 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/home/home.component').then((m) => m.HomeComponent),
   },
   {
+    path: 'wod-editor',
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/wod-editor/wod-editor.component').then((m) => m.WodEditorComponent),
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./pages/wod-editor/wod-editor.component').then((m) => m.WodEditorComponent),
+      },
+    ],
+  },
+  {
     path: 'wods',
     children: [
       {
@@ -20,6 +33,10 @@ export const routes: Routes = [
       {
         path: ':id',
         loadComponent: () => import('./pages/wods/wod/wod.component').then((m) => m.WodComponent),
+      },
+      {
+        path: ':id/scores',
+        loadComponent: () => import('./pages/wods/wod/scores/scores.component').then((m) => m.ScoresComponent),
       },
     ],
   },

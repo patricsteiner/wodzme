@@ -1,11 +1,19 @@
-<p class="text-white">
-  {{ (wod$ | async)?.workout }}
-</p>
-
-<input #input class="bg-gray-800"/>
-<button (click)="addResult(input.value)">add result</button>
-
-<h2>Results</h2>
-@for (result of results$ | async; track result) {
-  <div>{{ result.result }}</div>
+@if (wod$ | async; as wod) {
+  <app-wod-view [wod]="wod"></app-wod-view>
 }
+
+<a app-button [routerLink]="['scores']">scores</a>
+<a app-button (click)="dialog.showModal()">add score</a>
+
+<dialog #dialog class="bg-black">
+  <form method="dialog">
+    <button app-button type="submit" autofocus>X</button>
+  </form>
+  <form [formGroup]="scoreForm">
+    <input placeholder="Name" formControlName="name" type="text" />
+    <input placeholder="score" formControlName="score" type="number" />
+    <button app-button (click)="addScore()">Add</button>
+  </form>
+</dialog>
+
+<a app-button [routerLink]="['/wod-editor', id()]">edit</a>

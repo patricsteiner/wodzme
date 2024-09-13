@@ -1,5 +1,7 @@
-<div class="text-white">
 @for (wod of wods$ | async; track wod) {
-    <a [routerLink]="wod.id">{{ wod.workout }}</a>
-  }
-</div>
+  <div class="p-2 border-amber-400 rounded-lg border-2 m-2 hover:bg-amber-600" >
+    <a [routerLink]="wod.id">{{ wod.title }}: {{wod.description}}</a>
+  </div>
+}
+
+<a app-button routerLink="/wod-editor">Add</a>

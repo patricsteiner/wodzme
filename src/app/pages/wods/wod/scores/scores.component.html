@@ -1,0 +1,8 @@
+ <ol class="list-decimal list-inside">
+  @for (score of scores$ | async; track score) {
+    <li>{{ score.name }}: {{ score.score }}</li>
+    <button app-button (click)="deleteScore(score.id!)">X</button>
+  } @empty {
+    <span>No scores yet</span>
+  }
+</ol>

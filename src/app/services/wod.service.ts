@@ -1,120 +1,69 @@
 import { Injectable } from '@angular/core';
-import { getGenerativeModel, VertexAI } from '@angular/fire/vertexai-preview';
-import { WodDuration, WodFocus, WodLevel, WodType } from './types';
-import { addDoc, collection, collectionData, doc, docData, Firestore, query } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
-
-type WodConfig = {
-  duration?: WodDuration;
-  level?: WodLevel;
-  wodType?: WodType;
-  focus?: WodFocus[];
-};
-
-const durations = {
-  [WodDuration.SHORT]: 'under 10 minutes',
-  [WodDuration.MEDIUM]: '10-20 minutes',
-  [WodDuration.LONG]: 'more than 20 minutes',
-};
-const levels = {
-  [WodLevel.BEGINNER]: 'For beginner crossfit athletes',
-  [WodLevel.INTERMEDIATE]: 'For intermediate crossfit athletes',
-  [WodLevel.RX]: 'Tough workout for experienced crossfit athletes',
-  [WodLevel.BRUTAL]: 'Absolutely brutal workout, only for the fittest of the fit',
-};
-const types = {
-  [WodType.RFT]: 'Rounds for time',
-  [WodType.AMRAP]: 'As many rounds as possible',
-  [WodType.EMOM]: 'Every minute on the minute',
-  [WodType.CHIPPER]: 'As fast as possible',
-  [WodType.MIXED]: 'A mix between all possible crossfit workout styles (RFT, AMRAP, EMOM, CHIPPERS, ...)',
-};
-const focuses = {
-  [WodFocus.METCON]: 'Metabolic conditioning',
-  [WodFocus.WEIGHTLIFTING]: 'Weightlifting',
-  [WodFocus.GYMNASTICS]: 'Gymnastics and bodyweight exercises',
-};
+import {
+  addDoc,
+  collection,
+  collectionData,
+  deleteDoc,
+  doc,
+  docData,
+  Firestore,
+  limit,
+  orderBy,
+  query,
+  serverTimestamp,
+  setDoc,
+} from '@angular/fire/firestore';
+import { map, Observable } from 'rxjs';
+import { Score, Wod } from './wod.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WodService {
-  constructor(
-    private readonly firestore: Firestore,
-    private readonly vertexAI: VertexAI,
-  ) {}
+  private readonly wodsCollectionName = 'wods';
+  private readonly scoresCollectionName = 'scores';
 
-  async generateWod(wodConfig: WodConfig): Promise<string> {
-    const model = getGenerativeModel(this.vertexAI, {
-      model: 'gemini-1.5-flash',
-      systemInstruction: {
-        role: 'system',
-        parts: [
-          {
-            text: 'Your task is to create a crossfit WOD (workout of the day).',
-          },
-          {
-            text: 'Be brief, do not include any explanations and no warmup and cooldown.',
-          },
-          {
-            text: 'Use the metric system, and if the exercises have different weights for mena and woman, please note it with a slash (e.g. 100kg/80kg).',
-          },
-          {
-            text: 'Provide the workout in plain text, do not use markdown. The only formating you are allowed to use is dashes for lists of exercises. Make sure you do not include any dashes in front of the titles (only use them for list items).',
-          },
-          {
-            text: 'If additional workout properties are given, please take them into account. Otherwise, you are free to come up with any workout you like.',
-          },
-        ],
-      },
-    });
-    return model
-      .generateContent('Workout properties: ' + this.stringifyWodConfig(wodConfig))
-      .catch((error) => {
-        console.error(error);
-        return {
-          response: {
-            text: () => 'Error - Too many requests. Please wait a few minutes and try again.',
-          },
-        };
-      })
-      .then((res) => res.response.text());
+  constructor(private readonly firestore: Firestore) {}
+
+  findAll(): Observable<Wod[]> {
+    return collectionData(query(collection(this.firestore, this.wodsCollectionName), orderBy('createdAt', 'asc')), { idField: 'id' });
   }
 
-  private stringifyWodConfig(wodConfig: WodConfig) {
-    let res = '';
-    if (wodConfig.duration) {
-      res += 'duration: ' + wodConfig.duration + ' (' + durations[wodConfig.duration] + ')\n';
-    }
-    if (wodConfig.level) {
-      res += 'level: ' + wodConfig.level + ' (' + levels[wodConfig.level] + ')\n';
-    }
-    if (wodConfig.wodType) {
-      res += 'type: ' + wodConfig.wodType + ' (' + types[wodConfig.wodType] + ')\n';
-    }
-    if (wodConfig.focus?.length) {
-      res += 'focus: ' + wodConfig.focus.map((f) => focuses[f]).join(', ') + '\n';
-    }
-    return res;
+  find(id: string): Observable<Wod> {
+    return docData(doc(this.firestore, this.wodsCollectionName, id), { idField: 'id' });
   }
 
-  findAll(): Observable<{ workout: string; id: string }[]> {
-    return collectionData(query(collection(this.firestore, 'workouts')), { idField: 'id' });
+  async create(wod: Wod) {
+    wod.createdAt = serverTimestamp();
+    return addDoc(collection(this.firestore, this.wodsCollectionName), wod).then((docRef) => docRef.id);
   }
 
-  find(id: string): Observable<{ workout: string; id: string }> {
-    return docData(doc(this.firestore, 'workouts', id), { idField: 'id' });
+  async update(id: string, wod: Wod) {
+    wod.updatedAt = serverTimestamp();
+    delete wod.id;
+    return setDoc(doc(this.firestore, this.wodsCollectionName, id), wod, { merge: true });
   }
 
-  save(workout: string) {
-    addDoc(collection(this.firestore, 'workouts'), { workout });
+  async delete(id: string) {
+    return deleteDoc(doc(this.firestore, this.wodsCollectionName, id));
   }
 
-  addResult(id: string, result: string) {
-    addDoc(collection(this.firestore, 'workouts', id, 'results'), { result });
+  getScores(id: string): Observable<Score[]> {
+    return collectionData(query(collection(this.firestore, this.wodsCollectionName, id, this.scoresCollectionName)), { idField: 'id' });
   }
 
-  getResults(id: string): Observable<{ result: string }[]> {
-    return collectionData(query(collection(this.firestore, 'workouts', id, 'results')));
+  async addScore(id: string, score: Score) {
+    score.createdAt = serverTimestamp();
+    return addDoc(collection(this.firestore, this.wodsCollectionName, id, this.scoresCollectionName), score).then((docRef) => docRef.id);
+  }
+
+  deleteScore(id: string, scoreId: string) {
+    return deleteDoc(doc(this.firestore, this.wodsCollectionName, id, this.scoresCollectionName, scoreId));
+  }
+
+  newest(): Observable<Wod> {
+    return collectionData(query(collection(this.firestore, this.wodsCollectionName), orderBy('createdAt', 'asc'), limit(1)), {
+      idField: 'id',
+    }).pipe(map((wods: Wod[]) => wods[0]));
   }
 }
