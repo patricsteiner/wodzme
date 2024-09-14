@@ -1,7 +1,7 @@
 <div class="max-w-md m-auto border-2 rounded-xl bg-gray-800 p-4">
   <h1 class="text-xl">{{ wod().title }}</h1>
   <p class="text-lg">{{ wod().description }} | {{ wod().timeCap }}min</p>
-  <ul class="list-disc list-inside pl-4">
+  <ul class="list-['-_'] list-inside">
     @for (exercise of wod().exercises; track $index) {
       <li><span class="inline-block min-w-[2ch] text-right">{{ exercise.reps }}</span> {{ exercise.movement }} {{ exercise.weight }}</li>
     }

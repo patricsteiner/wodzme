@@ -1,14 +1,14 @@
 <div class="max-w-md m-auto p-4">
-  <h1 class="text-3xl font-bold my-4">Today's WOD</h1>
+  <img class="w-48 mx-auto" src="bear.png">
   @if (wod$ | async; as wod) {
     <app-wod-view [wod]="wod"></app-wod-view>
     <br />
-    <h1 class="text-xl">Scores</h1>
+    <h1 class="text-xl">Scores:</h1>
     <ol class="list-decimal list-inside">
       @for (score of scores$ | async; track score) {
         <li>{{ score.name }}: {{ score.score }}</li>
       } @empty {
-        <span>No scores yet</span>
+        <span>(No scores yet)</span>
       }
     </ol>
   }

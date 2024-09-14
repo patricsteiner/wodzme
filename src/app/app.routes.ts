@@ -24,6 +24,10 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'wod-generator',
+    loadComponent: () => import('./pages/wod-generator/wod-generator.component').then((m) => m.WodGeneratorComponent),
+  },
+  {
     path: 'wods',
     children: [
       {
