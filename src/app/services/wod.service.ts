@@ -13,7 +13,7 @@ import {
   serverTimestamp,
   setDoc,
 } from '@angular/fire/firestore';
-import { map, Observable } from 'rxjs';
+import { map, Observable, take } from 'rxjs';
 import { Score, Wod } from './wod.model';
 
 @Injectable({
@@ -26,7 +26,7 @@ export class WodService {
   constructor(private readonly firestore: Firestore) {}
 
   findAll(): Observable<Wod[]> {
-    return collectionData(query(collection(this.firestore, this.wodsCollectionName), orderBy('createdAt', 'asc')), { idField: 'id' });
+    return collectionData(query(collection(this.firestore, this.wodsCollectionName), orderBy('createdAt', 'desc')), { idField: 'id' });
   }
 
   find(id: string): Observable<Wod> {
@@ -49,7 +49,9 @@ export class WodService {
   }
 
   getScores(id: string): Observable<Score[]> {
-    return collectionData(query(collection(this.firestore, this.wodsCollectionName, id, this.scoresCollectionName)), { idField: 'id' });
+    return collectionData(query(collection(this.firestore, this.wodsCollectionName, id, this.scoresCollectionName)), {
+      idField: 'id',
+    });
   }
 
   async addScore(id: string, score: Score) {
@@ -61,9 +63,13 @@ export class WodService {
     return deleteDoc(doc(this.firestore, this.wodsCollectionName, id, this.scoresCollectionName, scoreId));
   }
 
-  newest(): Observable<Wod> {
-    return collectionData(query(collection(this.firestore, this.wodsCollectionName), orderBy('createdAt', 'asc'), limit(1)), {
+  getNewest() {
+    const data = collectionData(query(collection(this.firestore, this.wodsCollectionName), orderBy('createdAt', 'desc'), limit(1)), {
       idField: 'id',
-    }).pipe(map((wods: Wod[]) => wods[0]));
+    }) as Observable<Wod[]>;
+    return data.pipe(
+      map((wods) => (wods.length ? wods[0] : null)),
+      take(1),
+    );
   }
 }

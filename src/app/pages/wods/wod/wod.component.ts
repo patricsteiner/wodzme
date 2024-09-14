@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { WodService } from '../../../services/wod.service';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { switchMap } from 'rxjs';
+import { filter, switchMap } from 'rxjs';
 import { AsyncPipe, JsonPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ButtonComponent } from '../../../ui/button/button.component';
@@ -18,8 +18,10 @@ import { Score } from '../../../services/wod.model';
 })
 export class WodComponent {
   readonly id = input.required<string>();
-  readonly id$ = toObservable(this.id);
-  readonly wod$ = this.id$.pipe(switchMap((id) => this.wodService.find(id)));
+  readonly wod$ = toObservable(this.id).pipe(
+    filter(Boolean),
+    switchMap((id) => this.wodService.find(id)),
+  );
 
   readonly scoreForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
