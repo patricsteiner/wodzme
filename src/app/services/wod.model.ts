@@ -4,7 +4,7 @@ import { WodFocus, WodLevel, WodType } from './types';
 export interface Wod {
   id?: string;
   title: string;
-  description?: string;
+  description: string;
   exercises: Exercise[];
   // ownerUserId?: string;
   createdAt?: Timestamp | FieldValue;
@@ -24,7 +24,7 @@ export interface Exercise {
 export interface Score {
   id?: string;
   name: string;
-  score: number;
+  score: string;
   // userId?: string;
   createdAt?: Timestamp | FieldValue;
 }

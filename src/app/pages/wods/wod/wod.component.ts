@@ -25,7 +25,7 @@ export class WodComponent {
 
   readonly scoreForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
-    score: [0, Validators.required],
+    score: ['', Validators.required],
   });
 
   constructor(

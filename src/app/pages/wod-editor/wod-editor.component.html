@@ -1,22 +1,33 @@
 <form [formGroup]="wodForm">
-  <input type="text" placeholder="Title" formControlName="title" />
-  <textarea placeholder="Description" formControlName="description"></textarea>
-  <input type="number" placeholder="Time cap (mins)" formControlName="timeCap" />
+  <label class="flex flex-col">
+    <span>Title</span>
+    <input type="text" placeholder="Murph" formControlName="title" />
+  </label>
+  <div class="flex gap-4">
+    <label class="grow-[3] w-3/4 flex flex-col">
+      <span>Description</span>
+      <input placeholder="5 RFT" formControlName="description" />
+    </label>
+    <label class="flex-1 w-1/4 flex flex-col">
+      <span class="text-nowrap">Time cap (mins)</span>
+      <input type="number" placeholder="Time cap (mins)" formControlName="timeCap" />
+    </label>
+  </div>
+
   <div formArrayName="exercises">
     @for (control of wodForm.controls.exercises.controls; let i = $index; track control.value) {
       <div [formGroupName]="i" class="flex gap-2">
-        <input type="text" placeholder="Reps" formControlName="reps" class="max-w-10" />
-        <input type="text" placeholder="Movement" formControlName="movement" />
-        <input type="text" placeholder="Weight" formControlName="weight" />
-        <button app-button (click)="moveExerciseUp(i)" >⬆️</button>
-        <button app-button (click)="moveExerciseDown(i)" >⬇️</button>
-        <button app-button (click)="removeExercise(i)" >❌</button>
+        <input type="text" placeholder="Reps" formControlName="reps" class="w-1/6"/>
+        <input type="text" placeholder="Movement" formControlName="movement" class="w-4/6"/>
+        <input type="text" placeholder="Weight" formControlName="weight" class="w-1/6"/>
+        <button  (click)="moveExerciseUp(i)">⬆️</button>
+        <button  (click)="moveExerciseDown(i)">⬇️</button>
+        <button  (click)="removeExercise(i)">❌</button>
       </div>
     }
   </div>
   <button app-button (click)="addExercise()">➕</button>
 </form>
-
 
 <button app-button (click)="save()">Save</button>
 <button app-button (click)="delete()">Delete</button>

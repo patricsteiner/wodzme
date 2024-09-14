@@ -12,3 +12,10 @@
 body {
   @apply font-mono bg-black text-white;
 }
+
+input, textarea {
+  @apply px-4 py-2 border-2 border-y-green-950 rounded-xl text-black;
+  &::placeholder {
+    @apply opacity-60 text-black
+  }
+}
