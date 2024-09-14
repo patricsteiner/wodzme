@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-  selector: 'button[app-button], a[app-button]',
+  selector: 'button[wdz-button], a[wdz-button]',
   standalone: true,
   imports: [],
   templateUrl: './button.component.html',

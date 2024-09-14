@@ -5,7 +5,7 @@ import { AsyncPipe } from '@angular/common';
 import { BottomNavComponent } from './layout/bottom-nav/bottom-nav.component';
 
 @Component({
-  selector: 'app-root',
+  selector: 'wdz-root',
   standalone: true,
   imports: [RouterOutlet, ChipsComponent, AsyncPipe, BottomNavComponent],
   templateUrl: './app.component.html',

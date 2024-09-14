@@ -1,19 +1,19 @@
 @if (wod$ | async; as wod) {
-  <app-wod-view [wod]="wod"></app-wod-view>
+  <wdz-wod-view [wod]="wod"></wdz-wod-view>
 }
 
-<a app-button [routerLink]="['scores']">scores</a>
-<a app-button (click)="dialog.showModal()">add score</a>
+<a wdz-button [routerLink]="['scores']">scores</a>
+<a wdz-button (click)="dialog.showModal()">add score</a>
 
 <dialog #dialog class="bg-black">
   <form method="dialog">
-    <button app-button type="submit" autofocus>X</button>
+    <button wdz-button type="submit" autofocus>X</button>
   </form>
   <form [formGroup]="scoreForm">
     <input placeholder="Name" formControlName="name" type="text" />
     <input placeholder="Score" formControlName="score" type="text" />
-    <button app-button (click)="addScore()">Add</button>
+    <button wdz-button (click)="addScore()">Add</button>
   </form>
 </dialog>
 
-<a app-button [routerLink]="['/wod-editor', id()]">edit</a>
+<a wdz-button [routerLink]="['/wod-editor', id()]">edit</a>

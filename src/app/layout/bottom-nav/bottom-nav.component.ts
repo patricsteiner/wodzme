@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-bottom-nav',
+  selector: 'wdz-bottom-nav',
   standalone: true,
   templateUrl: './bottom-nav.component.html',
   styleUrl: './bottom-nav.component.scss',
