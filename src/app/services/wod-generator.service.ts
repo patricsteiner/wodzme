@@ -18,7 +18,7 @@ const levels = {
   [WodLevel.BEGINNER]: 'For beginner crossfit athletes',
   [WodLevel.INTERMEDIATE]: 'For intermediate crossfit athletes',
   [WodLevel.RX]: 'Tough workout for experienced crossfit athletes',
-  [WodLevel.BRUTAL]: 'Absolutely brutal workout, only for the fittest of the fit',
+  [WodLevel.BRUTAL]: 'Absolutely fucking insane and brutal workout, only for the fittest of the fit',
 };
 const types = {
   [WodType.RFT]: 'Rounds for time',
@@ -42,29 +42,30 @@ export class WodGeneratorService {
   async generateWod(wodConfig: WodConfig): Promise<string> {
     const model = getGenerativeModel(this.vertexAI, {
       model: 'gemini-1.5-flash',
+      generationConfig: { responseMimeType: 'application/json' },
       systemInstruction: {
         role: 'system',
         parts: [
           {
-            text: 'Your task is to create a crossfit WOD (workout of the day).',
+            text: 'Your task is to create a crossfit workout, taking into account the given requirements',
           },
           {
-            text: 'Be brief, do not include any explanations and no warmup and cooldown.',
+            text: 'if you receive "Workout properties", please take them into account. Otherwise, you are free to come up with any workout.',
           },
           {
-            text: 'Use the metric system, and if the exercises have different weights for mena and woman, please note it with a slash (e.g. 100kg/80kg).',
+            text: 'The output should be a complete workout in the following json format: { "title": string, "description": string, "timeCap": number, "exercises": [ { "movement": string, "reps": string, "weight": string } ] }',
           },
           {
-            text: 'Provide the workout in plain text, do not use markdown. The only formating you are allowed to use is dashes for lists of exercises. Make sure you do not include any dashes in front of the titles (only use them for list items).',
+            text: 'the description should only contain the workout type. Some examples: "N RFT" (replace N with a number), "AMRAP", "EMOM", "21-15-9", or ladders/pyramids.',
           },
           {
-            text: 'If additional workout properties are given, please take them into account. Otherwise, you are free to come up with any workout you like.',
+            text: 'if some values are not necessary (e.g. timeCap, weight, reps), set them as an empty string or 0.',
           },
         ],
       },
     });
     return model
-      .generateContent('Workout properties: ' + this.stringifyWodConfig(wodConfig))
+      .generateContent('Workout requirements: ' + this.stringifyWodConfig(wodConfig))
       .catch((error) => {
         console.error(error);
         return {
@@ -89,6 +90,9 @@ export class WodGeneratorService {
     }
     if (wodConfig.focus?.length) {
       res += 'focus: ' + wodConfig.focus.map((f) => focuses[f]).join(', ') + '\n';
+    }
+    if (!res) {
+      res = 'no specific requirements.';
     }
     return res;
   }
