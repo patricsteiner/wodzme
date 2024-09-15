@@ -1,16 +1,10 @@
 <div class="max-w-md m-auto p-4">
-  <img class="w-48 mx-auto" src="bear.png">
+  <img class="w-48 mx-auto mb-4" src="bear.png" />
   @if (wod$ | async; as wod) {
     <wdz-wod-view [wod]="wod"></wdz-wod-view>
-    <br />
-    <h1 class="text-xl">Scores:</h1>
-    <ol class="list-decimal list-inside">
-      @for (score of scores$ | async; track score) {
-        <li>{{ score.name }}: {{ score.score }}</li>
-      } @empty {
-        <span>(No scores yet)</span>
-      }
-    </ol>
   }
 </div>
 
+<div class="text-center p-4">
+  <button routerLink="/wod-editor" class="wdz-button-primary">Create a new WOD</button>
+</div>

@@ -2,18 +2,15 @@
   <wdz-wod-view [wod]="wod"></wdz-wod-view>
 }
 
-<a wdz-button [routerLink]="['scores']">scores</a>
-<a wdz-button (click)="dialog.showModal()">add score</a>
+<!--<dialog #dialog class="bg-black">-->
+<!--  <form method="dialog">-->
+<!--    <button type="submit" autofocus>X</button>-->
+<!--  </form>-->
+<!--  <form [formGroup]="scoreForm">-->
+<!--    <input placeholder="Name" formControlName="name" type="text" />-->
+<!--    <input placeholder="Score" formControlName="score" type="text" />-->
+<!--    <button (click)="addScore()">Add</button>-->
+<!--  </form>-->
+<!--</dialog>-->
 
-<dialog #dialog class="bg-black">
-  <form method="dialog">
-    <button wdz-button type="submit" autofocus>X</button>
-  </form>
-  <form [formGroup]="scoreForm">
-    <input placeholder="Name" formControlName="name" type="text" />
-    <input placeholder="Score" formControlName="score" type="text" />
-    <button wdz-button (click)="addScore()">Add</button>
-  </form>
-</dialog>
-
-<a wdz-button [routerLink]="['/wod-editor', id()]">edit</a>
+<a class="wdz-button"  [routerLink]="['/wod-editor', id()]">edit</a>

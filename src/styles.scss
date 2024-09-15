@@ -7,15 +7,42 @@
   --color-primary-contrast: #000;
   --color-accent: #ffbd59;
   --color-accent-contrast: #000;
+  --color-background: #1a202c;
+  --color-background-contrast: #fff;
 }
 
 body {
-  @apply font-mono bg-black text-white;
+  @apply bg-black text-gray-200;
 }
 
-input, textarea {
-  @apply px-4 py-2 border-2 border-y-green-950 rounded-xl text-black;
+input,
+textarea {
+  @apply px-2 py-1 rounded-md text-gray-200 bg-gray-800 border border-gray-600;
   &::placeholder {
-    @apply opacity-60 text-black
+    @apply opacity-50 text-gray-200;
+  }
+  &.ng-invalid:not(.ng-untouched) {
+    border: 1px solid rgba(225, 63, 63, 0.72);
+  }
+}
+
+label {
+  @apply flex flex-col text-gray-400;
+  span {
+    @apply text-sm;
+  }
+}
+
+button, .wdz-button {
+  @apply px-4 py-2 border border-white rounded-lg;
+
+  &:hover {
+    @apply bg-gray-700;
+  }
+  &.wdz-button-primary {
+    @apply bg-wdz-primary text-gray-900;
+    &:hover {
+      @apply bg-wdz-accent;
+    }
   }
 }

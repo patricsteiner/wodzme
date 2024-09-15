@@ -24,9 +24,9 @@ export class WodEditorComponent {
 
   readonly wodForm = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(50)]],
-    description: ['', [Validators.maxLength(400)]],
+    description: ['', [Validators.required, Validators.maxLength(50)]],
     timeCap: [0, [Validators.min(1), Validators.max(600)]],
-    exercises: this.fb.nonNullable.array([this.createExerciseFormGroup(), this.createExerciseFormGroup(), this.createExerciseFormGroup()]),
+    exercises: this.fb.nonNullable.array([this.createExerciseFormGroup()]),
   });
 
   constructor(
