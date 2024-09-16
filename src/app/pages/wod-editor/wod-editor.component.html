@@ -36,7 +36,7 @@
                 #draggable
                 (dragstart)="draggable.classList.add('opacity-60'); draggingExerciseIdx = j; draggingPartIdx = i"
                 (dragend)="draggable.classList.remove('opacity-60')"
-                (dragenter)="draggable.classList.add('pl-4')"
+                (dragenter)="$event.preventDefault(); draggable.classList.add('pl-4')"
                 (dragover)="$event.preventDefault(); draggable.classList.add('pl-4')"
                 (dragleave)="draggable.classList.remove('pl-4')"
                 (drop)="moveDraggingExerciseTo(i, j); draggable.classList.remove('pl-4')"

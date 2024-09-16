@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "mobile-drag-drop/default.css";
+
 :root {
   --color-primary: #ff914d;
   --color-primary-contrast: #000;
