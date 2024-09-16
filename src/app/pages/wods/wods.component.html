@@ -1,11 +1,7 @@
 @for (wod of wods$ | async; track wod) {
   <div class="p-2 border-amber-400 rounded-lg border-2 m-2 hover:bg-amber-600">
     <a [routerLink]="wod.id">
-      {{ wod.title }}: {{ wod.description }}
-      @if (wod.timeCap) {
-        | {{ wod.timeCap }} min
-      }
-
+      {{ wod.name }}: {{ wod.description }}
     </a>
   </div>
 }

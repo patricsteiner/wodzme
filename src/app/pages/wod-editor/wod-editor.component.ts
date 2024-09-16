@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { WodService } from '../../services/wod.service';
-import { Exercise, Wod } from '../../services/wod.model';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, switchMap } from 'rxjs';
 import { JsonPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { ButtonComponent } from '../../ui/button/button.component';
+import { Wod } from '../../services/wod.model';
 
 @Component({
   standalone: true,
@@ -17,16 +17,17 @@ import { ButtonComponent } from '../../ui/button/button.component';
 })
 export class WodEditorComponent {
   id = input<string>();
+  draggingExerciseIdx: number | null = null;
+  draggingPartIdx: number | null = null;
 
   wod$ = toObservable(this.id)
     .pipe(filter(Boolean))
     .pipe(switchMap((id) => this.wodService.find(id)));
 
   readonly wodForm = this.fb.nonNullable.group({
-    title: ['', [Validators.required, Validators.maxLength(50)]],
-    description: ['', [Validators.required, Validators.maxLength(50)]],
-    timeCap: [0, [Validators.min(1), Validators.max(600)]],
-    exercises: this.fb.nonNullable.array([this.createExerciseFormGroup()]),
+    name: ['', [Validators.required, Validators.maxLength(50)]],
+    description: ['', [Validators.maxLength(50)]],
+    parts: this.fb.nonNullable.array([this.createWodPartFormGroup()]),
   });
 
   constructor(
@@ -36,51 +37,44 @@ export class WodEditorComponent {
   ) {
     this.wod$.subscribe((wod) => {
       this.wodForm.patchValue(wod);
-      this.wodForm.controls.exercises.clear();
-      wod.exercises.forEach(() => this.addExercise());
-      wod.exercises.forEach((exercise, i) => this.wodForm.controls.exercises.at(i).patchValue(exercise));
+      this.wodForm.controls.parts.clear();
+      wod.parts.forEach((part, i) => {
+        this.addPart();
+        this.wodForm.controls.parts.at(i).patchValue(part);
+        this.wodForm.controls.parts.at(i).controls.exercises.clear();
+        part.exercises.forEach(() => this.addExercise(i));
+        part.exercises.forEach((exercise, j) => this.wodForm.controls.parts.at(i).controls.exercises.at(j).patchValue(exercise));
+      });
     });
   }
 
-  private createExerciseFormGroup(): FormGroup {
-    return this.fb.group({
+  private createWodPartFormGroup() {
+    return this.fb.nonNullable.group({
+      description: ['', [Validators.required, Validators.maxLength(50)]],
+      exercises: this.fb.nonNullable.array([this.createExerciseFormGroup()]),
+    });
+  }
+
+  private createExerciseFormGroup() {
+    return this.fb.nonNullable.group({
       movement: ['', [Validators.required, Validators.maxLength(50)]],
       reps: ['', [Validators.maxLength(20)]],
       weight: ['', [Validators.maxLength(20)]],
     });
   }
 
-  addExercise() {
-    this.wodForm.controls.exercises.push(this.createExerciseFormGroup());
+  addExercise(partIdx: number) {
+    this.wodForm.controls.parts.at(partIdx).controls.exercises.push(this.createExerciseFormGroup());
   }
 
-  removeExercise(i: number) {
-    this.wodForm.controls.exercises.removeAt(i);
-  }
-
-  moveExerciseUp(i: number) {
-    if (i === 0) return;
-    const exercises = this.wodForm.controls.exercises;
-    const exercise = exercises.at(i);
-    exercises.removeAt(i);
-    exercises.insert(i - 1, exercise);
-  }
-
-  moveExerciseDown(i: number) {
-    const exercises = this.wodForm.controls.exercises;
-    if (i === exercises.length - 1) return;
-    const exercise = exercises.at(i);
-    exercises.removeAt(i);
-    exercises.insert(i + 1, exercise);
+  removeExercise(partIdx: number, exerciseIdx: number) {
+    this.wodForm.controls.parts.at(partIdx).controls.exercises.removeAt(exerciseIdx);
   }
 
   async save() {
     this.wodForm.markAllAsTouched();
     if (!this.wodForm.valid) return;
-    const wod: Wod = {
-      ...this.wodForm.getRawValue(),
-      exercises: this.wodForm.controls.exercises.getRawValue() as Exercise[],
-    };
+    const wod: Wod = this.wodForm.getRawValue();
     let id = this.id();
     if (id) {
       await this.wodService.update(this.id()!, wod);
@@ -93,5 +87,22 @@ export class WodEditorComponent {
   async delete() {
     if (this.id()) await this.wodService.delete(this.id()!);
     await this.router.navigate(['/wods']);
+  }
+
+  addPart() {
+    this.wodForm.controls.parts.push(this.createWodPartFormGroup());
+  }
+
+  removePart(partIdx: number) {
+    this.wodForm.controls.parts.removeAt(partIdx);
+  }
+
+  moveDraggingExerciseTo(partIdx: number, exerciseIdx: number) {
+    if (this.draggingExerciseIdx === null || this.draggingPartIdx !== partIdx) return;
+    const exercises = this.wodForm.controls.parts.at(partIdx).controls.exercises;
+    const exercise = exercises.at(this.draggingExerciseIdx);
+    exercises.removeAt(this.draggingExerciseIdx);
+    exercises.insert(exerciseIdx, exercise);
+    this.draggingExerciseIdx = null;
   }
 }

@@ -1,33 +1,59 @@
 <div class="p-4">
   <form [formGroup]="wodForm">
     <label class="mb-4">
-      <span>Title</span>
-      <input type="text" placeholder="Murph" formControlName="title" />
+      <span>Name</span>
+      <input type="text" placeholder="e.g. Murph" formControlName="name" />
     </label>
-    <div class="flex gap-4 mb-4">
-      <label class="grow-[3] w-3/4">
-        <span>Description</span>
-        <input placeholder="5 RFT" formControlName="description" />
-      </label>
-      <label class="flex-1 w-1/4">
-        <span class="text-nowrap overflow-ellipsis overflow-hidden">Time cap (mins)</span>
-        <input type="number" placeholder="Time cap (mins)" formControlName="timeCap" />
-      </label>
-    </div>
+    <label class="mb-4">
+      <span>Description</span>
+      <input placeholder="e.g. Timecap 20min" formControlName="description" />
+    </label>
 
-    <div formArrayName="exercises" class="flex flex-col gap-2">
-      @for (control of wodForm.controls.exercises.controls; let i = $index; track control.value) {
-        <div [formGroupName]="i" class="flex gap-2">
-          <input type="text" placeholder="Reps" formControlName="reps" class="w-1/6" />
-          <input type="text" placeholder="Movement" formControlName="movement" class="w-4/6" />
-          <input type="text" placeholder="Weight" formControlName="weight" class="w-1/6" />
-          <button (click)="moveExerciseUp(i)">↑</button>
-          <button (click)="moveExerciseDown(i)" >↓</button>
-          <button (click)="removeExercise(i)">🞪</button>
+    <div formArrayName="parts" class="flex flex-col gap-2">
+      @for (partFormControl of wodForm.controls.parts.controls; let i = $index; track partFormControl.value) {
+        @if (wodForm.controls.parts.length > 1 && i > 0) {
+          <div class="flex items-center justify-between">
+            <h2>Workout Part {{ i + 1 }}</h2>
+            <button (click)="removePart(i)" class="border-0 text-red-500">🞪</button>
+          </div>
+        }
+        <div [formGroupName]="i" class="flex flex-col gap-2">
+          <label>
+            <span>{{ wodForm.controls.parts.length > 1 ? 'Part ' + (i + 1) : 'Workout' }} description</span>
+            <input type="text" placeholder="e.g. 5 RFT" formControlName="description" />
+          </label>
+
+          <div formArrayName="exercises" class="flex flex-col gap-2">
+            @for (exerciseFormControl of partFormControl.controls.exercises.controls; let j = $index; track exerciseFormControl.value) {
+              <div
+                [formGroupName]="j"
+                class="flex gap-2 items-center"
+                draggable="true"
+                #draggable
+                (dragstart)="draggable.classList.add('opacity-60'); draggingExerciseIdx = j; draggingPartIdx = i"
+                (dragend)="draggable.classList.remove('opacity-60')"
+                (dragenter)="draggable.classList.add('pl-4')"
+                (dragover)="$event.preventDefault(); draggable.classList.add('pl-4')"
+                (dragleave)="draggable.classList.remove('pl-4')"
+                (drop)="moveDraggingExerciseTo(i, j); draggable.classList.remove('pl-4')"
+              >
+                <span class="text-gray-400 cursor-move">░</span>
+                <input type="text" placeholder="Reps" formControlName="reps" class="w-1/6" />
+                <input type="text" placeholder="Movement" formControlName="movement" class="w-4/6" />
+                <input type="text" placeholder="Weight" formControlName="weight" class="w-1/6" />
+                <button (click)="removeExercise(i, j)" class="border-0 p-2 text-red-500">🞪</button>
+              </div>
+            }
+          </div>
+          <div class="p-2 border-dashed border border-gray-500 rounded-lg cursor-pointer bg-gray-900 opacity-75" (click)="addExercise(i)">
+            + add exercise
+          </div>
         </div>
       }
     </div>
-    <button (click)="addExercise()" class="m-2 block mx-auto">➕ add exercise</button>
+    <div class="mt-4 p-2 py-8 border-dashed border border-gray-500 rounded-lg cursor-pointer bg-gray-900 opacity-75" (click)="addPart()">
+      + add workout part (e.g. Buyout)
+    </div>
   </form>
 
   <div class="flex justify-end gap-2 mt-4">

@@ -1,18 +1,18 @@
 import { FieldValue, Timestamp } from '@angular/fire/firestore';
-import { WodFocus, WodLevel, WodType } from './types';
 
 export interface Wod {
   id?: string;
-  title: string;
-  description: string;
-  exercises: Exercise[];
+  name: string;
+  description?: string;
+  parts: WodPart[];
   // ownerUserId?: string;
   createdAt?: Timestamp | FieldValue;
   updatedAt?: Timestamp | FieldValue;
-  timeCap?: number;
-  type?: WodType;
-  level?: WodLevel;
-  focuses?: WodFocus[];
+}
+
+export interface WodPart {
+  description: string;
+  exercises: Exercise[];
 }
 
 export interface Exercise {
