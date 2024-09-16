@@ -13,7 +13,7 @@ import {
   serverTimestamp,
   setDoc,
 } from '@angular/fire/firestore';
-import { map, Observable, take } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Score, Wod } from './wod.model';
 
 @Injectable({
@@ -67,9 +67,6 @@ export class WodService {
     const data = collectionData(query(collection(this.firestore, this.wodsCollectionName), orderBy('createdAt', 'desc'), limit(1)), {
       idField: 'id',
     }) as Observable<Wod[]>;
-    return data.pipe(
-      map((wods) => (wods.length ? wods[0] : null)),
-      take(1),
-    );
+    return data.pipe(map((wods) => (wods.length ? wods[0] : null)));
   }
 }

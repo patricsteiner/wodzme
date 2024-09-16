@@ -14,7 +14,6 @@ import { RouterLink } from '@angular/router';
 })
 export class HomeComponent {
   wod$ = this.wodService.getNewest();
-  // .pipe(shareReplay({ bufferSize: 1, refCount: true }));
   // without shareReplay the application never becomes stable and cannot even build. i don't rly understand why, but when the scores below depend on this observable, it seems to be necessary.
 
   constructor(private readonly wodService: WodService) {}
