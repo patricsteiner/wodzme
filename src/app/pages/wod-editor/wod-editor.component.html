@@ -14,18 +14,7 @@
         @if (wodForm.controls.parts.length > 1 && i > 0) {
           <div class="flex items-center justify-between">
             <h2>Workout Part {{ i + 1 }}</h2>
-            <button (click)="removePart(i)" class="border-0 p-2 text-red-600 opacity-60">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="size-6"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-              </svg>
-            </button>
+            <button (click)="removePart(i)" class="border-0 px-1 py-0.5 pb-2 font-extrabold text-red-600">−</button>
           </div>
         }
         <div [formGroupName]="i" class="flex flex-col gap-2">
@@ -36,9 +25,9 @@
 
           <div formArrayName="exercises" class="flex flex-col gap-2">
             @for (exerciseFormControl of partFormControl.controls.exercises.controls; let j = $index; track exerciseFormControl.value) {
-              <div [formGroupName]="j" class="flex gap-2 items-center">
+              <div [formGroupName]="j" class="flex items-center gap-2">
                 <span
-                  class="text-gray-400 cursor-move"
+                  class="cursor-move text-gray-400"
                   draggable="true"
                   #dragHandle
                   (dragstart)="dragHandle.classList.add('text-white'); draggingExerciseIdx = j; draggingPartIdx = i"
@@ -62,40 +51,30 @@
                 <input type="text" placeholder="Reps" formControlName="reps" class="w-1/6" />
                 <input type="text" placeholder="Movement" formControlName="movement" class="w-4/6" />
                 <input type="text" placeholder="Weight" formControlName="weight" class="w-1/6" />
-                <button (click)="removeExercise(i, j)" class="border-0 p-2 text-red-600 opacity-60">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
-                    <path
-                      d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"
-                    />
-                  </svg>
-                </button>
+                <button (click)="removeExercise(i, j)" class="border-0 px-1 py-0.5 pb-2 font-extrabold text-red-600">−</button>
               </div>
             }
           </div>
-          <div
-            class="p-2 border-dashed border border-gray-500 rounded-lg cursor-pointer bg-gray-900 opacity-75 flex items-center gap-2 hover:bg-gray-800"
+          <button
+            class="text-stone-400 flex items-center gap-2 border-dashed border-stone-500 bg-stone-900 py-0.5"
             (click)="addExercise(i)"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
+            <span class="pb-0.5 text-2xl">+</span>
             <span>add exercise</span>
-          </div>
+          </button>
         </div>
       }
     </div>
-    <div
-      class="mt-4 p-2 py-8 border-dashed border border-gray-500 rounded-lg cursor-pointer bg-gray-900 opacity-75 flex items-center gap-2 hover:bg-gray-800"
+    <button
+      class="text-stone-400 mt-4 flex w-full items-center gap-2 border border-dashed border-stone-500 bg-stone-900 py-6"
       (click)="addPart()"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-      </svg>
+      <span class="pb-0.5 text-2xl">+</span>
       <span>add workout part (e.g. Buyout)</span>
-    </div>
+    </button>
   </form>
 
-  <div class="flex justify-end gap-2 mt-4">
+  <div class="mt-4 flex justify-end gap-2">
     <button (click)="delete()">Delete</button>
     <button (click)="save()" class="wdz-button-primary">Save</button>
   </div>

@@ -3,14 +3,14 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { WodService } from '../../services/wod.service';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, switchMap } from 'rxjs';
-import { JsonPipe } from '@angular/common';
+import { DatePipe, JsonPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { ButtonComponent } from '../../ui/button/button.component';
 import { Wod } from '../../services/wod.model';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, JsonPipe, ButtonComponent],
+  imports: [ReactiveFormsModule, JsonPipe, ButtonComponent, DatePipe],
   templateUrl: './wod-editor.component.html',
   styleUrl: './wod-editor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,12 +20,14 @@ export class WodEditorComponent {
   draggingExerciseIdx: number | null = null;
   draggingPartIdx: number | null = null;
 
+  readonly defaultName = 'WOD ' + new DatePipe('de-CH').transform(new Date(), 'dd.MM.yyyy');
+
   wod$ = toObservable(this.id)
     .pipe(filter(Boolean))
     .pipe(switchMap((id) => this.wodService.find(id)));
 
   readonly wodForm = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.maxLength(50)]],
+    name: [this.defaultName, [Validators.required, Validators.maxLength(50)]],
     description: ['', [Validators.maxLength(50)]],
     parts: this.fb.nonNullable.array([this.createWodPartFormGroup()]),
   });

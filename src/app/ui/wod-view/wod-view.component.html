@@ -1,10 +1,10 @@
-<div class="max-w-md m-auto border rounded-xl border-amber-400 p-4 bg-gray-800 font-mono shadow-[6px_6px_0_orange]">
-  <h1 class="text-xl">{{ wod().name }}</h1>
-  <p class="text-lg">{{ wod().description }}</p>
+<div class="m-auto max-w-md border border-stone-400 bg-black p-4 shadow-[6px_6px_0] shadow-stone-50">
+  <h1 class="text-xl font-bold">{{ wod().name }}</h1>
+  <p>{{ wod().description }}</p>
   @for (part of wod().parts; track $index) {
     <div>
-      <h2 class="text-lg">{{ part.description }}</h2>
-      <ul class="list-['-_'] list-inside">
+      <h2 class="font-bold">{{ part.description }}</h2>
+      <ul class="list-inside list-['-_']">
         @for (exercise of part.exercises; track $index) {
           <li>
             <span class="inline-block min-w-[2ch] text-right">{{ exercise.reps }}</span> {{ exercise.movement }} {{ exercise.weight }}

@@ -1,9 +1,9 @@
 @for (wod of wods$ | async; track wod) {
-  <div class="p-2 border-amber-400 rounded-lg border-2 m-2 hover:bg-amber-600">
-    <a [routerLink]="wod.id">
-      {{ wod.name }}: {{ wod.description }}
-    </a>
+  <div class="m-2 cursor-pointer border bg-black p-2 transition-all hover:shadow-[4px_4px]">
+    <a [routerLink]="wod.id"> {{ wod.name }} {{ wod.description ? ':' : '' }} {{ wod.description }} </a>
   </div>
 }
 
-<a wdz-button routerLink="/wod-editor">Add</a>
+<div class="flex w-full justify-center p-6">
+  <a class="wdz-button wdz-button-primary" routerLink="/wod-editor">Add your WOD</a>
+</div>
