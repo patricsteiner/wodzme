@@ -55,23 +55,36 @@
               </div>
             }
           </div>
-          <button
-            class="text-stone-400 flex items-center gap-2 border-dashed border-stone-500 bg-stone-900 py-0.5"
-            (click)="addExercise(i)"
-          >
-            <span class="pb-0.5 text-2xl">+</span>
-            <span>add exercise</span>
-          </button>
+          <div class="flex gap-2">
+            <button
+              class="flex grow items-center gap-2 border-dashed border-stone-500 bg-stone-900 py-0.5 text-stone-400"
+              (click)="addExercise(i)"
+            >
+              <span class="pb-0.5 text-2xl">+</span>
+              <span>add exercise</span>
+            </button>
+            <button
+              class="flex items-center gap-2 border-dashed border-stone-500 bg-stone-900 py-0.5 text-stone-400"
+              (click)="addRandomExercise(i)"
+            >
+              <span class="pb-0.5">🎲</span>
+            </button>
+          </div>
         </div>
       }
     </div>
-    <button
-      class="text-stone-400 mt-4 flex w-full items-center gap-2 border border-dashed border-stone-500 bg-stone-900 py-6"
-      (click)="addPart()"
-    >
-      <span class="pb-0.5 text-2xl">+</span>
-      <span>add workout part (e.g. Buyout)</span>
-    </button>
+    <div class="mt-4 flex gap-2">
+      <button
+        class="flex w-full grow items-center gap-2 border border-dashed border-stone-500 bg-stone-900 py-6 text-stone-400"
+        (click)="addPart()"
+      >
+        <span class="pb-0.5 text-2xl">+</span>
+        <span>add workout part (e.g. Buyout)</span>
+      </button>
+      <button class="flex items-center gap-2 border-dashed border-stone-500 bg-stone-900 py-0.5 text-stone-400" (click)="addRandomPart()" [disabled]="generatingWodPart()">
+        <span class="pb-0.5" [class.animate-bounce]="generatingWodPart()">🎲</span>
+      </button>
+    </div>
   </form>
 
   <div class="mt-4 flex justify-end gap-2">

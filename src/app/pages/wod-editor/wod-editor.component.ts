@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { WodService } from '../../services/wod.service';
 import { toObservable } from '@angular/core/rxjs-interop';
@@ -7,6 +7,8 @@ import { DatePipe, JsonPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { ButtonComponent } from '../../ui/button/button.component';
 import { Wod } from '../../services/wod.model';
+import { WodGeneratorService } from '../../services/wod-generator.service';
+import { movements } from '../../services/movements';
 
 @Component({
   standalone: true,
@@ -31,11 +33,14 @@ export class WodEditorComponent {
     description: ['', [Validators.maxLength(50)]],
     parts: this.fb.nonNullable.array([this.createWodPartFormGroup()]),
   });
+  protected readonly generatingWodPart = signal(false);
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly wodService: WodService,
+    private readonly wodGeneratorService: WodGeneratorService,
     private readonly router: Router,
+    private readonly cdr: ChangeDetectorRef,
   ) {
     this.wod$.subscribe((wod) => {
       this.wodForm.patchValue(wod);
@@ -106,5 +111,27 @@ export class WodEditorComponent {
     exercises.removeAt(this.draggingExerciseIdx);
     exercises.insert(exerciseIdx, exercise);
     this.draggingExerciseIdx = null;
+  }
+
+  addRandomExercise(partIdx: number) {
+    const randomMovement = movements[Math.floor(Math.random() * movements.length)];
+    this.addExercise(partIdx);
+    this.wodForm.controls.parts
+      .at(partIdx)
+      .controls.exercises.at(this.wodForm.controls.parts.at(partIdx).controls.exercises.length - 1)
+      .patchValue({ movement: randomMovement.name, reps: randomMovement.referenceReps, weight: randomMovement.referenceWeight });
+  }
+
+  async addRandomPart() {
+    this.generatingWodPart.set(true);
+    const wodPart = await this.wodGeneratorService.generateWodPart();
+    this.generatingWodPart.set(false);
+    this.addPart();
+    const i = this.wodForm.controls.parts.length - 1;
+    this.wodForm.controls.parts.at(i).patchValue(wodPart);
+    this.wodForm.controls.parts.at(i).controls.exercises.clear();
+    wodPart.exercises.forEach(() => this.addExercise(i));
+    wodPart.exercises.forEach((exercise, j) => this.wodForm.controls.parts.at(i).controls.exercises.at(j).patchValue(exercise));
+    this.cdr.detectChanges();
   }
 }

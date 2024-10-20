@@ -46,9 +46,12 @@ button,
   }
 
   &.wdz-button-primary {
-    @apply bg-wdz-primary font-bold text-black;
-    &:hover {
-      @apply bg-wdz-accent shadow-[6px_6px];
+    @apply bg-wdz-primary font-bold text-black shadow-[1px_4px] transition;
+    &:hover:not(:active) {
+      @apply -translate-x-[2px] -translate-y-[2px] bg-wdz-accent shadow-[2px_6px];
+    }
+    &:active {
+      @apply translate-x-[1px] translate-y-[4px] bg-wdz-accent shadow-none;
     }
   }
 }

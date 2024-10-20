@@ -39,6 +39,32 @@ const focuses = {
 export class WodGeneratorService {
   constructor(private readonly vertexAI: VertexAI) {}
 
+  async generateWodPart(): Promise<{ description: string; exercises: { movement: string; reps: string; weight: string }[] }> {
+    const model = getGenerativeModel(this.vertexAI, {
+      model: 'gemini-1.5-flash',
+      generationConfig: { responseMimeType: 'application/json' },
+      systemInstruction: {
+        role: 'system',
+        parts: [
+          {
+            text: 'The output should be a workout in this json format: { "description": string, "exercises": [ { "movement": string, "reps": string, "weight": string } ] }',
+          },
+          {
+            text: 'the description should contain the workout type. Some examples: "N RFT" (replace N with a number), "AMRAP", "EMOM", "21-15-9", or ladders/pyramids.',
+          },
+          {
+            text: 'Reps and weights are not necessary for all exercises.',
+          },
+          {
+            text: 'Use kg for weight and include male and female weights (e.g. 50/30 kg) if applicable.,',
+          },
+        ],
+      },
+    });
+    const res = await model.generateContent('Create a crossfit Workout').then((res) => res.response.text());
+    return JSON.parse(res);
+  }
+
   async generateWod(wodConfig: WodConfig): Promise<string> {
     const model = getGenerativeModel(this.vertexAI, {
       model: 'gemini-1.5-flash',
